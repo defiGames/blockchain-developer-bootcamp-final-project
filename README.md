@@ -1,2 +1,2 @@
-#The Rarity Game
+# The Rarity Game
 * **Description:** This Dapp will create a collection of NFTs that will be used in The Rarity Game. Each players goal is to mint the most unique NFT pattern possible by selecting points in a grid. After 100 NFTS have been minted, the most common design will be burned each time a new NFT is minted. Players are incentiviced to create the most unique and therefore long lasting pattern through a minting fee distribution. Each new mint price increases slightly and is distributed evenly amongst the existing NFT holders' wallets.
