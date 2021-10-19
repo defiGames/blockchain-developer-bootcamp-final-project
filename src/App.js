@@ -4,8 +4,7 @@ import { ethers } from 'ethers'
 import Greeter from './artifacts/contracts/Greeter.sol/Greeter.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const greeterAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3"
-
+const greeterAddress = "0x851356ae760d987E095750cCeb3bC6014560891C"
 function App() {
   // store greeting in local state
   const [greeting, setGreetingValue] = useState()
@@ -35,13 +34,14 @@ function App() {
   async function setGreeting() {
     if (!greeting) return
     if (typeof window.ethereum !== 'undefined') {
+      let overrides = {
+        value: ethers.utils.parseEther("0.1")     // ether in this case MUST be a string
+      }; 
       await requestAccount()
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner()
       const contract = new ethers.Contract(greeterAddress, Greeter.abi, signer)
-      //const transaction = await contract.setGreeting(greeting)
-      //await transaction.wait()
-      const transaction2 = await contract.mintGuess([parseInt(greeting[0]),!!greeting[1],!!greeting[2],!!greeting[3]])
+      const transaction2 = await contract.mintGuess([parseInt(greeting[0]),parseInt(greeting[1]),parseInt(greeting[2]),parseInt(greeting[3]),], overrides)
       console.log(Boolean(parseInt(greeting[0])))
       console.log("raw" + greeting[0])
       await transaction2.wait()

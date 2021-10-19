@@ -13,11 +13,31 @@ describe("Greeter", function () {
 
     // wait until the transaction is mined
     await setGreetingTx.wait();
-
-    const setPattern = await greeter.mintGuess([1,1,1,1]);
+      let overrides = {
+        value: ethers.utils.parseEther("0.1")     // ether in this case MUST be a string
+      }; 
+    const setPattern = await greeter.mintGuess([1,1,1,1], overrides);
 
     await setPattern.wait();
 
     expect(await greeter.greet()).to.equal("Hola, mundo!");
+
+  });
+
+  
+  it("Should update guessCount to one", async function () {
+
+    const Greeter = await ethers.getContractFactory("Greeter");
+    const greeter = await Greeter.deploy("Hello, world!");
+    await greeter.deployed();
+
+      let overrides = {
+        value: ethers.utils.parseEther("0.1")     // ether in this case MUST be a string
+      }; 
+    const setPattern = await greeter.mintGuess([1,1,1,1], overrides);
+
+    await setPattern.wait();
+    expect(await greeter.guessCount()).to.equal(1);
+
   });
 });

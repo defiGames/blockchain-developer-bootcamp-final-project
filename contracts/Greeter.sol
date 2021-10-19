@@ -6,9 +6,9 @@ import "hardhat/console.sol";
 contract Greeter {
     string private greeting;
     mapping(address => bool[4] ) public patterns;
-    uint patternCount;
-    uint[4] patternTotals;
-
+    uint public patternCount;
+    uint[4] public patternTotals;
+    uint public guessCount;
     constructor(string memory _greeting) {
         console.log("Deploying a Greeter with greeting:", _greeting);
         greeting = _greeting;
@@ -23,28 +23,25 @@ contract Greeter {
         greeting = _greeting;
     }
 
-    function mintGuess(bool[4] memory pattern) public {
-        console.log("Ran mintGuess");
-        console.log(pattern[0]);
-        console.log("pattern:", pattern[0]);
+    function mintGuess(bool[4] memory pattern) public payable {
+        require(msg.value == 0.1 ether);
+        console.log("pattern:", pattern[3]);
         //convert string to bool array
-
-/*
-        reqiure(msg.value == 0.1 ether);
-
-        patterns[msg.sender] = boolPattern;
+        patterns[msg.sender] = pattern;
         guessCount++;
-        updateTotalGuesses();
+        patternTotals[0] += pattern[0] ? 1 : 0;
+        
+        console.log(patternTotals[0]);
+        /*
+       // updateTotalGuesses();
         
         if we are at limit
         updateRarity();
         drop most common
-        
         updateRewards
-
 */
-
     }
+    
 }
 /*
 mint NFT with pattern
