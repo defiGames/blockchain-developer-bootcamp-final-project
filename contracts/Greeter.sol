@@ -5,7 +5,16 @@ import "hardhat/console.sol";
 
 contract Greeter {
     string private greeting;
-    mapping(address => bool[4] ) public patterns;
+    struct playerData {
+        bool[4] pattern;
+        bool burned;
+        uint reward;
+    }
+
+    mapping(address => playerData ) public players;
+    
+    address[] addressList;
+
     uint public patternCount;
     uint[4] public patternTotals;
     uint public guessCount;
@@ -23,17 +32,40 @@ contract Greeter {
         greeting = _greeting;
     }
 
-    function mintGuess(bool[4] memory pattern) public payable {
+    function mintGuess(bool[4] memory _pattern) public payable {
+        //require that they send ether
         require(msg.value == 0.1 ether);
-        console.log("pattern:", pattern[3]);
-        //convert string to bool array
-        patterns[msg.sender] = pattern;
+       // console.log("pattern:", pattern[3]);
+
+       //save the msg senders pattern in the mapping
+        players[msg.sender].pattern = _pattern;
+        addressList.push(msg.sender);
+
+        //increase the total guesses
         guessCount++;
-        patternTotals[0] += pattern[0] ? 1 : 0;
-        
-        console.log(patternTotals[0]);
+
+        //add submitted pattern to pattern totals
+        for (uint i = 0; i<4; i++ ){
+            patternTotals[i] += _pattern[i] ? 1 : 0;
+        } 
+        uint lowestRarity;
+        address addressToCancel;
+        //update data for existing players
+        for(uint i = 0; i<guessCount; i++){
+            uint _newRarity;
+            for(uint j = 0; j<4; j++){
+                uint guessComponent =players[addressList[i]].pattern[j] ? 1 : 0;             
+                _newRarity += patternTotals[j] - guessCount * guessComponent; 
+            }
+            if(_newRarity<lowestRarity) {
+                addressToCancel = addressList[i];
+                lowestRarity = _newRarity;
+            }
+
+        }
+        players[addressToCancel].burned = true;
+
         /*
-       // updateTotalGuesses();
         
         if we are at limit
         updateRarity();
@@ -56,7 +88,7 @@ update fee
 update nft count
 
 claim fee function:
-check if user has the nft
+check if player has the nft
 check their balance
 transfer the funds
 */
