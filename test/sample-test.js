@@ -1,3 +1,4 @@
+const { SignerWithAddress } = require("@nomiclabs/hardhat-ethers/signers");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
@@ -22,20 +23,6 @@ describe("Greeter", function () {
 
   });
 
-  
-  it("Should update guessCount to one", async function () {
-
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
-    let overrides = {value: ethers.utils.parseEther("0.1")};     // ether in this case MUST be a string
-
-    const setPattern = await greeter.mintGuess([1,1,1,1], overrides);
-
-    await setPattern.wait();
-    expect(await greeter.guessCount()).to.equal(1);
-
-  });
   it("it should update patternTotals to one", async function () {
 
     const Greeter = await ethers.getContractFactory("Greeter");
@@ -56,12 +43,33 @@ describe("Greeter", function () {
     await greeter.deployed();
 
     let overrides = {value: ethers.utils.parseEther("0.1")};     // ether in this case MUST be a string
-    for (let i = 0; i<10; i++){
-      const setPattern = await greeter.mintGuess([1,1,1,1], overrides);
+    const loops = 5;
+    
+    const accounts = await ethers.getSigners();
+    
+    /*
+    for (let i = 0; i<loops; i++){
+      //console.log(accounts[i].address);
+      const setPattern = await greeter.connect(accounts[i]).mintGuess( [1,1,1,1], overrides);
       await setPattern.wait();
-    } 
-    expect(await greeter.guessCount()).to.equal(10);
-    expect(await greeter.patternTotals(1)).to.equal(10);
+    }*/ 
+    
+      let setPattern = await greeter.connect(accounts[0]).mintGuess( [1,0,1,0], overrides);
+      await setPattern.wait();
+      
+      setPattern = await greeter.connect(accounts[1]).mintGuess( [1,1,1,1], overrides);
+      await setPattern.wait();
+
+      setPattern = await greeter.connect(accounts[2]).mintGuess( [1,1,1,1], overrides);
+      await setPattern.wait();
+
+      setPattern = await greeter.connect(accounts[3]).mintGuess( [1,1,1,1], overrides);
+      await setPattern.wait();
+      
+      setPattern = await greeter.connect(accounts[4]).mintGuess( [1,1,1,1], overrides);
+      await setPattern.wait();
+      
+    expect(await greeter.patternTotals(0)).to.equal(loops);
 
   });
 });

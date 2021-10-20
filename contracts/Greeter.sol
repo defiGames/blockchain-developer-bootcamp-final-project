@@ -15,13 +15,76 @@ contract Greeter {
     
     address[] addressList;
 
-    uint public patternCount;
+    uint public totalPatternCount;
     uint[4] public patternTotals;
-    uint public guessCount;
+    uint public patternLimit = 3;
     constructor(string memory _greeting) {
         console.log("Deploying a Greeter with greeting:", _greeting);
         greeting = _greeting;
     }
+
+    function mintGuess(bool[4] memory _pattern) public payable {
+        //require that they send ether
+        require(msg.value == 0.1 ether);
+        //console.log("pattern:", _pattern[3]);
+
+       //save the msg senders pattern in the mapping
+        players[msg.sender].pattern = _pattern;
+        addressList.push(msg.sender);
+
+        //increase the total guesses
+        totalPatternCount++;
+
+        //add submitted pattern to pattern totals
+        for (uint i = 0; i<4; i++ ){
+            patternTotals[i] += _pattern[i] ? 1 : 0;
+        } 
+
+        //find a burn most common pattern holder
+        address addressToCancel = msg.sender; //default address to burn is the newest
+        uint liveAddressCount; 
+        uint lowestRarity = 4 * patternLimit;
+
+       //burn most rare by looping through all patterns
+        for(uint i = 0; i<totalPatternCount; i++){
+            console.log("\nLOOP: %s",i);
+            //playerData player = players[addressList[i]];
+            //skip burned addresses
+            if(players[addressList[i]].burned) continue;
+            liveAddressCount++;
+
+            //calculate rarity by comparing each pattern component to the avg
+            uint _rarity;
+            for(uint j = 0; j<4; j++){
+                uint patternComponent =players[addressList[i]].pattern[j] ? 1 : 0;             
+                uint inflatedPattern = liveAddressCount * patternComponent; 
+                _rarity = inflatedPattern > patternTotals[j] ? inflatedPattern - patternTotals[j] : patternTotals[j] - inflatedPattern; 
+            }
+                console.log(addressList[i]);
+                console.log("lowest rarity %s", lowestRarity);
+                console.log("new rarity %s", _rarity);
+            //save the loswest rarity address for burn if we are over limit
+            if(_rarity < lowestRarity ) {
+                addressToCancel = addressList[i];
+                lowestRarity = _rarity;
+            }
+
+        }
+        //if we are over the limit, burn address
+        if( liveAddressCount > patternLimit) {
+            players[addressToCancel].burned = true;
+            for (uint j = 0; j<4; j++ ){
+                patternTotals[j] -= players[addressToCancel].pattern[j] ? 1 : 0;
+            } 
+            
+            console.log("address to cancel: %s", addressToCancel);
+        }
+        //  updateRewards
+    }
+
+    function abs(int x) private pure returns (uint) {
+        return uint(x >= 0 ? x : -x);
+    } 
 
     function greet() public view returns (string memory) {
         return greeting;
@@ -32,48 +95,6 @@ contract Greeter {
         greeting = _greeting;
     }
 
-    function mintGuess(bool[4] memory _pattern) public payable {
-        //require that they send ether
-        require(msg.value == 0.1 ether);
-       // console.log("pattern:", pattern[3]);
-
-       //save the msg senders pattern in the mapping
-        players[msg.sender].pattern = _pattern;
-        addressList.push(msg.sender);
-
-        //increase the total guesses
-        guessCount++;
-
-        //add submitted pattern to pattern totals
-        for (uint i = 0; i<4; i++ ){
-            patternTotals[i] += _pattern[i] ? 1 : 0;
-        } 
-        uint lowestRarity;
-        address addressToCancel;
-        //update data for existing players
-        for(uint i = 0; i<guessCount; i++){
-            uint _newRarity;
-            for(uint j = 0; j<4; j++){
-                uint guessComponent =players[addressList[i]].pattern[j] ? 1 : 0;             
-                _newRarity += patternTotals[j] - guessCount * guessComponent; 
-            }
-            if(_newRarity<lowestRarity) {
-                addressToCancel = addressList[i];
-                lowestRarity = _newRarity;
-            }
-
-        }
-        players[addressToCancel].burned = true;
-
-        /*
-        
-        if we are at limit
-        updateRarity();
-        drop most common
-        updateRewards
-*/
-    }
-    
 }
 /*
 mint NFT with pattern
