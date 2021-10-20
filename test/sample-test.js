@@ -69,7 +69,7 @@ describe("Greeter", function () {
       setPattern = await greeter.connect(accounts[4]).mintGuess( [1,1,1,1], overrides);
       await setPattern.wait();
       
-    expect(await greeter.patternTotals(0)).to.equal(loops);
-
+    expect(await greeter.totalPatternCount()).to.equal(loops);
+    // expect burned id in return?
   });
 });

@@ -15,15 +15,16 @@ contract Greeter {
     
     address[] addressList;
 
+    uint constant squares = 4;
     uint public totalPatternCount;
-    uint[4] public patternTotals;
+    uint[squares] public patternTotals;
     uint public patternLimit = 3;
     constructor(string memory _greeting) {
         console.log("Deploying a Greeter with greeting:", _greeting);
         greeting = _greeting;
     }
 
-    function mintGuess(bool[4] memory _pattern) public payable {
+    function mintGuess(bool[squares] memory _pattern) public payable {
         //require that they send ether
         require(msg.value == 0.1 ether);
         //console.log("pattern:", _pattern[3]);
@@ -36,14 +37,14 @@ contract Greeter {
         totalPatternCount++;
 
         //add submitted pattern to pattern totals
-        for (uint i = 0; i<4; i++ ){
+        for (uint i = 0; i<squares; i++ ){
             patternTotals[i] += _pattern[i] ? 1 : 0;
         } 
 
         //find a burn most common pattern holder
         address addressToCancel = msg.sender; //default address to burn is the newest
         uint liveAddressCount; 
-        uint lowestRarity = 4 * patternLimit;
+        uint lowestRarity = squares * patternLimit;
 
        //burn most rare by looping through all patterns
         for(uint i = 0; i<totalPatternCount; i++){
@@ -55,7 +56,7 @@ contract Greeter {
 
             //calculate rarity by comparing each pattern component to the avg
             uint _rarity;
-            for(uint j = 0; j<4; j++){
+            for(uint j = 0; j<squares; j++){
                 uint patternComponent =players[addressList[i]].pattern[j] ? 1 : 0;             
                 uint inflatedPattern = liveAddressCount * patternComponent; 
                 _rarity = inflatedPattern > patternTotals[j] ? inflatedPattern - patternTotals[j] : patternTotals[j] - inflatedPattern; 
@@ -73,7 +74,7 @@ contract Greeter {
         //if we are over the limit, burn address
         if( liveAddressCount > patternLimit) {
             players[addressToCancel].burned = true;
-            for (uint j = 0; j<4; j++ ){
+            for (uint j = 0; j<squares; j++ ){
                 patternTotals[j] -= players[addressToCancel].pattern[j] ? 1 : 0;
             } 
             
