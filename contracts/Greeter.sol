@@ -13,12 +13,13 @@ contract Greeter {
 
     mapping(address => playerData ) public players;
     
-    address[] addressList;
+    address[] public addressList;
 
     uint constant squares = 4;
     uint public totalPatternCount;
     uint[squares] public patternTotals;
     uint public patternLimit = 3;
+    uint public liveAddressCount; 
     constructor(string memory _greeting) {
         console.log("Deploying a Greeter with greeting:", _greeting);
         greeting = _greeting;
@@ -35,6 +36,7 @@ contract Greeter {
 
         //increase the total guesses
         totalPatternCount++;
+        liveAddressCount++;
 
         //add submitted pattern to pattern totals
         for (uint i = 0; i<squares; i++ ){
@@ -43,7 +45,6 @@ contract Greeter {
 
         //find a burn most common pattern holder
         address addressToCancel = msg.sender; //default address to burn is the newest
-        uint liveAddressCount; 
         uint lowestRarity = squares * patternLimit;
 
        //burn most rare by looping through all patterns
@@ -52,18 +53,25 @@ contract Greeter {
             //playerData player = players[addressList[i]];
             //skip burned addresses
             if(players[addressList[i]].burned) continue;
-            liveAddressCount++;
 
             //calculate rarity by comparing each pattern component to the avg
             uint _rarity;
+            uint[8] memory debug;
+
             for(uint j = 0; j<squares; j++){
                 uint patternComponent =players[addressList[i]].pattern[j] ? 1 : 0;             
                 uint inflatedPattern = liveAddressCount * patternComponent; 
-                _rarity = inflatedPattern > patternTotals[j] ? inflatedPattern - patternTotals[j] : patternTotals[j] - inflatedPattern; 
+                _rarity += inflatedPattern > patternTotals[j] ? inflatedPattern - patternTotals[j] : patternTotals[j] - inflatedPattern; 
+
+                debug[j] = inflatedPattern;
+                debug[j+4] = patternTotals[j];
             }
+
                 console.log(addressList[i]);
-                console.log("lowest rarity %s", lowestRarity);
-                console.log("new rarity %s", _rarity);
+                console.log(debug[0], debug[1], debug[2], debug[3] );
+                console.log(debug[4], debug[5], debug[6], debug[7] );
+                console.log("old ratity: %s " , lowestRarity);
+                console.log("new rarity %s ", _rarity);
             //save the loswest rarity address for burn if we are over limit
             if(_rarity < lowestRarity ) {
                 addressToCancel = addressList[i];
@@ -74,6 +82,9 @@ contract Greeter {
         //if we are over the limit, burn address
         if( liveAddressCount > patternLimit) {
             players[addressToCancel].burned = true;
+            liveAddressCount--;
+
+            //remove burned patterns from totals
             for (uint j = 0; j<squares; j++ ){
                 patternTotals[j] -= players[addressToCancel].pattern[j] ? 1 : 0;
             } 
