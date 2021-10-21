@@ -5,19 +5,21 @@ import "hardhat/console.sol";
 
 contract Greeter {
     string private greeting;
+    uint constant squares = 4;
     struct playerData {
-        bool[4] pattern;
-        bool burned;
         uint reward;
-        bool exists;
     }
-
     mapping(address => playerData ) public players;
+    struct patternStruct {
+        uint[squares] pattern;
+        bool burned;
+        address creator;
+    }
+    patternStruct[] public patterns;
     
     address[] public addressList;
 
-    uint constant squares = 4;
-    uint public totalPatternCount;
+    uint public totalplayerCount;
     uint[squares] public patternTotals;
     uint public patternLimit = 3;
     uint public liveAddressCount; 
@@ -26,43 +28,40 @@ contract Greeter {
         greeting = _greeting;
     }
 
-    function mintGuess(bool[squares] memory _pattern) public payable {
+    function mintGuess(uint[squares] memory _pattern) public payable {
         //require that they send ether
         require(msg.value == 0.1 ether, "please send ether");
-        require(players[msg.sender].exists == false, "You can only submit one pattern per wallet.");
         //console.log("pattern:", _pattern[3]);
 
        //save the msg senders pattern in the mapping
-        players[msg.sender].pattern = _pattern;
+        patterns.push(patternStruct(_pattern, false, msg.sender));
         addressList.push(msg.sender);
-        players[msg.sender].exists = true;
 
         //increase the total guesses
-        totalPatternCount++;
         liveAddressCount++;
 
         //add submitted pattern to pattern totals
         for (uint i = 0; i<squares; i++ ){
-            patternTotals[i] += _pattern[i] ? 1 : 0;
+            patternTotals[i] += _pattern[i];
         } 
 
         //find a burn most common pattern holder
-        address addressToCancel = msg.sender; //default address to burn is the newest
+        uint idToCancel = patterns.length - 1; //default address to burn is the newest
         uint lowestRarity = squares * patternLimit;
 
        //burn most rare by looping through all patterns
-        for(uint i = 0; i<totalPatternCount; i++){
+        for(uint i = 0; i<patterns.length; i++){
             console.log("\nLOOP: %s",i);
             //playerData player = players[addressList[i]];
             //skip burned addresses
-            if(players[addressList[i]].burned) continue;
+            if(patterns[i].burned) continue;
 
             //calculate rarity by comparing each pattern component to the avg
             uint _rarity;
             uint[8] memory debug;
 
             for(uint j = 0; j<squares; j++){
-                uint patternComponent =players[addressList[i]].pattern[j] ? 1 : 0;             
+                uint patternComponent =patterns[i].pattern[j];             
                 uint inflatedPattern = liveAddressCount * patternComponent; 
                 _rarity += inflatedPattern > patternTotals[j] ? inflatedPattern - patternTotals[j] : patternTotals[j] - inflatedPattern; 
 
@@ -77,22 +76,22 @@ contract Greeter {
                 console.log("new rarity %s ", _rarity);
             //save the loswest rarity address for burn if we are over limit
             if(_rarity < lowestRarity ) {
-                addressToCancel = addressList[i];
+                idToCancel = i;
                 lowestRarity = _rarity;
             }
 
         }
         //if we are over the limit, burn address
         if( liveAddressCount > patternLimit) {
-            players[addressToCancel].burned = true;
+            patterns[idToCancel].burned = true;
             liveAddressCount--;
 
             //remove burned patterns from totals
             for (uint j = 0; j<squares; j++ ){
-                patternTotals[j] -= players[addressToCancel].pattern[j] ? 1 : 0;
+                patternTotals[j] -= patterns[idToCancel].pattern[j];
             } 
             
-            console.log("address to cancel: %s", addressToCancel);
+            console.log("pattern to cancel: %s", idToCancel);
         }
         //  updateRewards
     }
