@@ -9,6 +9,7 @@ contract Greeter {
         bool[4] pattern;
         bool burned;
         uint reward;
+        bool exists;
     }
 
     mapping(address => playerData ) public players;
@@ -27,12 +28,14 @@ contract Greeter {
 
     function mintGuess(bool[squares] memory _pattern) public payable {
         //require that they send ether
-        require(msg.value == 0.1 ether);
+        require(msg.value == 0.1 ether, "please send ether");
+        require(players[msg.sender].exists == false, "You can only submit one pattern per wallet.");
         //console.log("pattern:", _pattern[3]);
 
        //save the msg senders pattern in the mapping
         players[msg.sender].pattern = _pattern;
         addressList.push(msg.sender);
+        players[msg.sender].exists = true;
 
         //increase the total guesses
         totalPatternCount++;

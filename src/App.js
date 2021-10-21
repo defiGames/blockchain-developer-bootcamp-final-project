@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import Greeter from './artifacts/contracts/Greeter.sol/Greeter.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const greeterAddress = "0x851356ae760d987E095750cCeb3bC6014560891C"
+const greeterAddress = "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0"
 function App() {
   // store greeting in local state
   const [greeting, setGreetingValue] = useState()
@@ -16,12 +16,10 @@ function App() {
 
   // call the smart contract, read the current greeting value
   async function fetchGreeting() {
-    console.log('test: ')
     if (typeof window.ethereum !== 'undefined') {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const contract = new ethers.Contract(greeterAddress, Greeter.abi, provider)
       try {
-        console.log('test: ')
         const data = await contract.greet()
         console.log('data: ', data)
       } catch (err) {
@@ -45,7 +43,7 @@ function App() {
       console.log(Boolean(parseInt(greeting[0])))
       console.log("raw" + greeting[0])
       await transaction2.wait()
-      fetchGreeting()
+      //fetchGreeting()
     }
   }
 
