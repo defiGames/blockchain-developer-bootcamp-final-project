@@ -15,29 +15,19 @@ beforeEach(async function() {
 });
 
 describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    expect(await greeter.greet()).to.equal("Hello, world!");
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
+  it("Should return the new pattern id once submitted ", async function () {
 
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
-
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
-
-  });
-
-  it("it should update patternTotals to one", async function () {
-    const setPattern = await greeter.mintGuess([1,1,1,1], overrides);
-
+    let setPattern = await greeter.mintGuess( [1,0,1,0], overrides);
     await setPattern.wait();
-    expect(await greeter.patternTotals(3)).to.equal(1);
+    expect(await greeter.totalPatternCount()).to.equal(1);
 
   });
+
   it("it should update rarity", async function () {
 
     const accounts = await ethers.getSigners();
-    const loops = 5;
+    const loops = 3;
     /*
     for (let i = 0; i<loops; i++){
       //console.log(accounts[i].address);
@@ -47,7 +37,7 @@ describe("Greeter", function () {
     
       let setPattern = await greeter.connect(accounts[0]).mintGuess( [1,0,1,0], overrides);
       await setPattern.wait();
-      
+
       setPattern = await greeter.connect(accounts[1]).mintGuess( [0,1,0,1], overrides);
       await setPattern.wait();
 
@@ -60,9 +50,9 @@ describe("Greeter", function () {
       setPattern = await greeter.connect(accounts[4]).mintGuess( [0,0,0,0], overrides);
       await setPattern.wait();
       
-      const count = await greeter.totalPatternCount();
+      const count = await greeter.liveAddressCount();
       expect(count).to.equal(loops);
-      expect(await greeter.addressList(count-1)).to.equal(accounts[4].address);
+      //expect(await greeter.addressList(count-1)).to.equal(accounts[4].address);
       //expect(await greeter.patternTotals(0)).to.equal(3);
 
     // expect burned id in return?

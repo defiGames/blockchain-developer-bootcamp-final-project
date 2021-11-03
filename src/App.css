@@ -24,6 +24,9 @@
   color: white;
 }
 
+.App-confirmation{
+  /*display: none;*/
+}
 .App-link {
   color: #61dafb;
 }
