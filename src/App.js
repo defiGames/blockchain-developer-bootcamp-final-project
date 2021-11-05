@@ -1,17 +1,15 @@
 import './App.css';
 import { useState } from 'react';
 import { ethers } from 'ethers' 
-import ReactDOM from "react-dom";
 import Greeter from './artifacts/contracts/Greeter.sol/Greeter.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const greeterAddress = "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1"
+const greeterAddress = "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e"
 function App() {
   // store pattern in local state
   const [pattern, setPatternValue] = useState()
-  const [patternNo, setPatternNo] = useState()
-  const [pending, setPending] = useState()
-  const [hidden, setHidden] = useState()
+  const [savedPatterns, setSavedPatterns] = useState()
+  const [msg, setMsg] = useState()
 
   // request access to the user's MetaMask account
   async function requestAccount() {
@@ -19,14 +17,41 @@ function App() {
   }
 
   // call the smart contract, read the current pattern value
-  async function fetchPattern() {
+  async function confirmation() {
     if (typeof window.ethereum !== 'undefined') {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const contract = new ethers.Contract(greeterAddress, Greeter.abi, provider)
       try {
         const data = String(await contract.totalPatternCount())
-        setPending(`Pattern ID No. ${data-1} has been submitted!`)
+        setMsg(`Pattern ID No. ${data-1} has been submitted!`)
         console.log('data: ', data)
+      } catch (err) {
+        console.log("Error: ", err)
+      }
+    }    
+  }
+
+  async function fetchPatterns() {
+    if (typeof window.ethereum !== 'undefined') {
+
+      const connected =  await isMetaMaskConnected()
+      if (!connected) {
+          // metamask is not connected
+          setMsg("Please Connect Wallet")
+          return
+      } 
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const contract = new ethers.Contract(greeterAddress, Greeter.abi, provider)
+      try {
+        const data = await contract.fetchPatternID()
+        if(data[0]){
+          setSavedPatterns(`Pattern ${data[0]}`) 
+          const pattern = await contract.fetchPatterns(data[0])
+          setSavedPatterns(`Pattern ${pattern}`) 
+        } else {
+          setSavedPatterns("No Patterns Found")
+        }
+        console.log('data: ', data[0])
       } catch (err) {
         console.log("Error: ", err)
       }
@@ -40,33 +65,53 @@ function App() {
       let overrides = {
         value: ethers.utils.parseEther("0.1")     // ether in this case MUST be a string
       }; 
-      await requestAccount()
+    
+      const connected =  await isMetaMaskConnected()
+
+      if (!connected) {
+          // metamask is not connected
+          setMsg("Please Connect Wallet")
+          return
+      } 
+
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner()
       const contract = new ethers.Contract(greeterAddress, Greeter.abi, signer)
       const transaction2 = await contract.mintGuess([parseInt(pattern[0]),parseInt(pattern[1]),parseInt(pattern[2]),parseInt(pattern[3]),], overrides)
       console.log(Boolean(parseInt(pattern[0])))
       console.log("raw" + pattern[0])
-      setPending("Tx Pending")
-      setHidden(false)
+      setMsg("Tx Pending")
       await transaction2.wait()
-      fetchPattern()
+      confirmation()
     }
   }
+
 
   return (
     <div className="App">
       <header className="App-header">
-        <div className="App-confirmation"  style={{ display: hidden ? "none" : "block"   }}>
-          {pending}
+        <div className="App-confirmation"  >
+          {msg}
         </div>
         <input onChange={e => setPatternValue(e.target.value)} placeholder="Submit Pattern" />
         <button onClick={submitPattern}>Set Pattern</button>
-        <button onClick={fetchPattern}>Fetch Pattern</button>
-      </header>
+        <button onClick={fetchPatterns}>Fetch Pattern</button>
+         <button onClick={requestAccount}>Connect Wallet</button>
+        <div className="App-Pattern"  >
+          {savedPatterns}
+        </div>
+     </header>
     </div>
   );
 }
 
+const isMetaMaskConnected = async () => {
+  //const accounts = await provider.listAccounts();   
+  //const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+  const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+  return accounts.length > 0;
+}
+  
 export default App
 //

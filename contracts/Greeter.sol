@@ -23,7 +23,7 @@ contract Greeter {
 
     patternStruct[] public patterns;
     
-    uint public totalPatternCount=0;
+    uint public totalPatternCount;
     uint[squares] public patternTotals;
     uint public patternLimit = 3;
     uint public liveAddressCount; 
@@ -100,12 +100,16 @@ contract Greeter {
             
             console.log("pattern to cancel: %s", idToCancel);
         }
-        //  updateRewards
         return totalPatternCount-1;
+        //  updateRewards
     }
 
-    function pattern() public view returns (uint[squares] memory){
-        return (patterns[players[msg.sender].patternId[0]].pattern);
+    function fetchPatternID() public view returns (uint[] memory){
+        return (players[msg.sender].patternId);
+    }
+
+    function fetchPatterns(uint id) public view returns(uint[squares] memory){
+        return (patterns[id].pattern);
     }
 
     function abs(int x) private pure returns (uint) {
