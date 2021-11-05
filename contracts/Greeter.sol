@@ -108,7 +108,10 @@ contract Greeter {
         return (players[msg.sender].patternId);
     }
 
-    function fetchPatterns(uint id) public view returns(uint[squares] memory){
+    function patternIsActive(uint id) public view returns(bool){
+        return (patterns[id].burned);
+    }
+       function fetchPatterns(uint id) public view returns(uint[squares] memory){
         return (patterns[id].pattern);
     }
 

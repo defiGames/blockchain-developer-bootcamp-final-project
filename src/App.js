@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import Greeter from './artifacts/contracts/Greeter.sol/Greeter.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const greeterAddress = "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e"
+const greeterAddress = "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1"
 function App() {
   // store pattern in local state
   const [pattern, setPatternValue] = useState()
@@ -58,7 +58,10 @@ function App() {
           for (let i = 0; i < data.length; i++) {
             patternText += "Pattern ID " + data[i] + ": "
             const pattern = await contract.fetchPatterns(data[i])
-            patternText += pattern + "\n\r" 
+            patternText += pattern 
+            const active = await contract.patternIsActive(data[i])
+            patternText += active ?   " Removed" : " Active" 
+            patternText += "\n"
           }
           setSavedPatterns(patternText) 
 
@@ -97,6 +100,7 @@ function App() {
       setMsg("Tx Pending")
       await transaction2.wait()
       confirmation()
+      fetchPatterns()
     }
   }
 
@@ -104,16 +108,13 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div className="App-confirmation"  >
-          {msg}
-        </div>
+        <div className="Instructions">Please Enter a 4 digit Pattern of 1s and 0s</div>
         <input onChange={e => setPatternValue(e.target.value)} placeholder="Submit Pattern" />
-        <button onClick={submitPattern}>Set Pattern</button>
-        <button onClick={fetchPatterns}>Fetch Pattern</button>
-         <button onClick={requestAccount}>{walletStatus}</button>
-        <div className="App-Pattern"  >
-          {savedPatterns}
-        </div>
+        <button onClick={submitPattern}>Save Pattern</button>
+        <div className="App-confirmation">{msg}</div>
+        <button onClick={fetchPatterns}>View My Patterns</button>
+        <div className="App-Pattern">{savedPatterns}</div>
+        <button onClick={requestAccount}>{walletStatus}</button>
      </header>
     </div>
   );
