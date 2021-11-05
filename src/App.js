@@ -10,10 +10,19 @@ function App() {
   const [pattern, setPatternValue] = useState()
   const [savedPatterns, setSavedPatterns] = useState()
   const [msg, setMsg] = useState()
+  const [walletStatus, setWalletStatus] = useState("Connect Wallet")
 
   // request access to the user's MetaMask account
   async function requestAccount() {
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    setMsg("")
+    try {
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+    } catch (err) {
+      setMsg("Error connecting Wallet: "+ err.message)
+      return false
+    }
+    console.log("connected")
+    setWalletStatus("Wallet Connected")
   }
 
   // call the smart contract, read the current pattern value
@@ -44,10 +53,15 @@ function App() {
       const contract = new ethers.Contract(greeterAddress, Greeter.abi, provider)
       try {
         const data = await contract.fetchPatternID()
-        if(data[0]){
-          setSavedPatterns(`Pattern ${data[0]}`) 
-          const pattern = await contract.fetchPatterns(data[0])
-          setSavedPatterns(`Pattern ${pattern}`) 
+        let patternText = ""
+        if(data.length > 0){
+          for (let i = 0; i < data.length; i++) {
+            patternText += "Pattern ID " + data[i] + ": "
+            const pattern = await contract.fetchPatterns(data[i])
+            patternText += pattern + "\n\r" 
+          }
+          setSavedPatterns(patternText) 
+
         } else {
           setSavedPatterns("No Patterns Found")
         }
@@ -96,7 +110,7 @@ function App() {
         <input onChange={e => setPatternValue(e.target.value)} placeholder="Submit Pattern" />
         <button onClick={submitPattern}>Set Pattern</button>
         <button onClick={fetchPatterns}>Fetch Pattern</button>
-         <button onClick={requestAccount}>Connect Wallet</button>
+         <button onClick={requestAccount}>{walletStatus}</button>
         <div className="App-Pattern"  >
           {savedPatterns}
         </div>
