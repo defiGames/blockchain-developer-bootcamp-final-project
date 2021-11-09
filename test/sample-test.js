@@ -34,7 +34,8 @@ describe("Greeter", function () {
       const setPattern = await greeter.connect(accounts[i]).mintGuess( [1,1,1,1], overrides);
       await setPattern.wait();
     }*/ 
-    
+      let originalAmount = accounts[0].value;
+
       let setPattern = await greeter.connect(accounts[0]).mintGuess( [1,0,1,0], overrides);
       await setPattern.wait();
 
@@ -52,9 +53,14 @@ describe("Greeter", function () {
       
       const count = await greeter.liveAddressCount();
       expect(count).to.equal(loops);
-      //expect(await greeter.addressList(count-1)).to.equal(accounts[4].address);
-      //expect(await greeter.patternTotals(0)).to.equal(3);
 
-    // expect burned id in return?
+      const expectedReward = ethers.utils.formatEther("216666666666666666");
+      const eth = ethers.utils.formatEther(await greeter.connect(accounts[0]).checkReward());
+      expect(eth).to.equal(expectedReward);
+
+      //expect that the first pattern has been burned
+      expect(await greeter.patternIsActive(0)).to.equal(false);
+      //test Reward claim
+
   });
 });

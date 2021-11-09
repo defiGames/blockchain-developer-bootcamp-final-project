@@ -5,7 +5,6 @@ import "hardhat/console.sol";
 
 contract Greeter {
 
-    string private greeting;
     uint constant squares = 4;
 
     struct playerData {
@@ -27,15 +26,14 @@ contract Greeter {
     uint[squares] public patternTotals;
     uint public patternLimit = 3;
     uint public liveAddressCount; 
+    uint public fee = 0.1 ether;
 
     constructor(string memory _greeting) {
-        console.log("Deploying a Greeter with greeting:", _greeting);
-        greeting = _greeting;
     }
 
     function mintGuess(uint[squares] memory _pattern) public payable returns (uint) {
         //require that they send ether
-        require(msg.value == 0.1 ether, "please send ether");
+        require(msg.value == fee, "please send ether");
         //console.log("pattern:", _pattern[3]);
 
        //save the msg senders pattern in the mapping
@@ -54,7 +52,7 @@ contract Greeter {
 
         //find a burn most common pattern holder
         uint idToCancel = patterns.length - 1; //default address to burn is the newest
-        uint lowestRarity = squares * patternLimit;
+        uint lowestRarity = squares * patternLimit; //default lowest rarity is highest possible
 
        //burn most rare by looping through all patterns
         for(uint i = 0; i<patterns.length; i++){
@@ -100,8 +98,31 @@ contract Greeter {
             
             console.log("pattern to cancel: %s", idToCancel);
         }
-        return totalPatternCount-1;
+
         //  updateRewards
+        for(uint i = 0; i<patterns.length; i++){
+            if(patterns[i].burned ) continue; //no fee if you just submitted. This portion will accummulte in the contract if not burned which will help the contract not become negative due to rounding error
+            address _address = patterns[i].creator;
+            players[_address].reward += fee/liveAddressCount;
+            console.log("rewarding: %s", players[_address].reward);
+            console.log("Address: %s", _address);
+        } 
+
+        return totalPatternCount-1;
+    }
+
+    function checkReward() public view returns (uint) {
+        return (players[msg.sender].reward);
+        console.log("CheckReward %s", players[msg.sender].reward);
+
+    }
+
+    function claimReward() public payable {
+        uint _reward = players[msg.sender].reward;
+        require(_reward > 0, "No reward to claim");
+        players[msg.sender].reward = 0;
+        (bool sent, bytes memory data) = msg.sender.call{value: _reward}("");
+        require(sent, "Failed to claim Reward");
     }
 
     function fetchPatternID() public view returns (uint[] memory){
@@ -109,23 +130,10 @@ contract Greeter {
     }
 
     function patternIsActive(uint id) public view returns(bool){
-        return (patterns[id].burned);
+        return (!patterns[id].burned);
     }
        function fetchPatterns(uint id) public view returns(uint[squares] memory){
         return (patterns[id].pattern);
-    }
-
-    function abs(int x) private pure returns (uint) {
-        return uint(x >= 0 ? x : -x);
-    } 
-
-    function greet() public view returns (string memory) {
-        return greeting;
-    }
-
-    function setGreeting(string memory _greeting) public {
-        console.log("Changing greeting from '%s' to '%s'", greeting, _greeting);
-        greeting = _greeting;
     }
 
 }
