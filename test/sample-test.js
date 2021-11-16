@@ -17,16 +17,16 @@ beforeEach(async function() {
   /*
   for (let i = 0; i<patternLimit; i++){
     //console.log(accounts[i].address);
-    const setPattern = await rarity.connect(accounts[i]).mintGuess( [1,1,1,1], overrides);
+    const setPattern = await rarity.connect(accounts[i]).submitPattern( [1,1,1,1], overrides);
     await setPattern.wait();
 }*/ 
 
   // Play the Game!! Submit 5 patterns, 2 will be elimanated if our limit is at 3
-  let setPattern = await rarity.connect(accounts[0]).mintGuess( [1,0,1,0], overrides);
-  setPattern = await rarity.connect(accounts[1]).mintGuess( [0,1,0,1], overrides);
-  setPattern = await rarity.connect(accounts[2]).mintGuess( [1,1,1,1], overrides);
-  setPattern = await rarity.connect(accounts[3]).mintGuess( [1,1,1,1], overrides);
-  setPattern = await rarity.connect(accounts[4]).mintGuess( [0,0,0,0], overrides);
+  let setPattern = await rarity.connect(accounts[0]).submitPattern( [1,0,1,0], overrides);
+  setPattern = await rarity.connect(accounts[1]).submitPattern( [0,1,0,1], overrides);
+  setPattern = await rarity.connect(accounts[2]).submitPattern( [1,1,1,1], overrides);
+  setPattern = await rarity.connect(accounts[3]).submitPattern( [1,1,1,1], overrides);
+  setPattern = await rarity.connect(accounts[4]).submitPattern( [0,0,0,0], overrides);
 });
 
 describe("Rarity Game", function () {
@@ -61,7 +61,7 @@ describe("Rarity Game", function () {
 
   });
   it("should emit an event when a pattern is submitted", async function () {
-    setPattern = await rarity.connect(accounts[4]).mintGuess( [0,0,0,0], overrides);
+    setPattern = await rarity.connect(accounts[4]).submitPattern( [0,0,0,0], overrides);
 
   });
 });

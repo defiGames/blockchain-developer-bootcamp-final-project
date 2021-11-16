@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import Rarity from './artifacts/contracts/Rarity.sol/Rarity.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const rarityAddress = "0x7A9Ec1d04904907De0ED7b6839CcdD59c3716AC9"
+const rarityAddress = "0x18E317A7D70d8fBf8e6E893616b52390EbBdb629"
 let provider 
 let signer
 let contract 
@@ -89,7 +89,7 @@ function App() {
     console.log("sending tx");
     let transaction;
     try {
-      transaction = await contract.mintGuess([parseInt(pattern[0]),parseInt(pattern[1]),parseInt(pattern[2]),parseInt(pattern[3]),], overrides)
+      transaction = await contract.submitPattern([parseInt(pattern[0]),parseInt(pattern[1]),parseInt(pattern[2]),parseInt(pattern[3]),], overrides)
       console.log("send tx");
     } catch (err) {
       setMsg(err.message)
@@ -110,12 +110,12 @@ function App() {
   async function fetchPatterns() {
     if (!walletConnected()) return
       try {
-        const data = await contract.fetchPatternID()
+        const data = await contract.fetchPatternIDs()
         let patternText = ""
         if(data.length > 0){
           for (let i = 0; i < data.length; i++) {
             patternText += "Pattern ID " + data[i] + ": "
-            const pattern = await contract.fetchPatterns(data[i])
+            const pattern = await contract.fetchPattern(data[i])
             patternText += pattern 
             const active = await contract.patternIsActive(data[i])
             patternText += active ?  " -Active" :  " -Inactive" 
