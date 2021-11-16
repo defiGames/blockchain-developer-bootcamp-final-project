@@ -36,7 +36,7 @@ describe("Rarity Game", function () {
   });
 
   it("should have burned the first pattern because it is least rare", async function () {
-    expect(await rarity.patternIsActive(0)).to.equal(false);
+    expect(await rarity.patternIsActive(2)).to.equal(false);
   });
   
   it("should limit the number of patterns to the pattern limit", async function () {
@@ -45,7 +45,7 @@ describe("Rarity Game", function () {
   });
   
   it("should earn the correct reward amount by playing", async function () {
-    const expectedReward = BigNumber.from("216666666666666666");
+    const expectedReward = BigNumber.from("233333333333333333");
     const actualReward = await rarity.connect(accounts[0]).checkReward();
     expect(actualReward).to.equal(expectedReward);
   });
@@ -58,6 +58,10 @@ describe("Rarity Game", function () {
     let newBalance = await provider.getBalance(accounts[0].address);
     //console.log("New Balance ", ethers.utils.formatEther(newBalance.toString()));
     expect(newBalance).to.be.above(originalAmount);
+
+  });
+  it("should emit an event when a pattern is submitted", async function () {
+    setPattern = await rarity.connect(accounts[4]).mintGuess( [0,0,0,0], overrides);
 
   });
 });

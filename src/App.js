@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import Rarity from './artifacts/contracts/Rarity.sol/Rarity.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const rarityAddress = "0x5f3f1dBD7B74C6B46e8c44f98792A1dAf8d69154"
+const rarityAddress = "0x7A9Ec1d04904907De0ED7b6839CcdD59c3716AC9"
 let provider 
 let signer
 let contract 
@@ -158,6 +158,7 @@ function App() {
   }
 
   async function checkReward() {
+    if (!walletConnected()) return
     try {
       const _reward = ethers.utils.formatEther(await contract.checkReward())
       const res = (+_reward).toFixed(2);
