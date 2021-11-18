@@ -3,7 +3,8 @@ const { expect } = require("chai");
 const { BigNumber } = require("ethers");
 const { ethers } = require("hardhat");
 
-let overrides = {value: ethers.utils.parseEther("0.1")};     // ether in this case MUST be a string
+let fee = ethers.utils.parseEther("0.1") // this should be pulled from contract
+let overrides = {value: fee};     // ether in this case MUST be a string
 let Rarity;
 let rarity;
 let patternLimit;
@@ -11,7 +12,7 @@ let accounts;
 
 beforeEach(async function() { 
   Rarity = await ethers.getContractFactory("Rarity");
-  rarity = await Rarity.deploy();
+  rarity = await Rarity.deploy(4, fee);
   accounts = await ethers.getSigners();
   patternLimit = await rarity.patternLimit();
   /*
