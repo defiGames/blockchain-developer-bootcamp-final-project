@@ -5,6 +5,15 @@
 ## Description
  This Dapp will create a collection of NFTs that will be used in The Rarity Game. Each players goal is to mint the most unique NFT pattern possible by selecting points in a grid. After 100 NFTS have been minted, the most common design will be burned each time a new NFT is minted. Players are incentiviced to create the most unique and therefore long lasting pattern through a minting fee distribution. Each new mint price increases slightly and is distributed evenly amongst the existing NFT holders' wallets.
 
+## Where to play
+The Rarity game is deployed on the Ropsten Testnet [here](). You will need test net Eth to play from a [faucet](https://app.mycrypto.com/faucet)
+
+## Directory Structure
+    hardhat.config.js - The entirety of your Hardhat setup (i.e. your config, plugins, and custom tasks) is contained in this file.
+    scripts - A folder containing a script named sample-script.js that will deploy your smart contract when executed
+    test - A folder containing an example testing script
+    contracts - A folder holding an example Solidity smart contract
+
 ## Run locally
 
 ```bash
@@ -41,7 +50,14 @@ npx hardhat run scripts/deploy.js --network localhost
 # Import Private key into Metamask and change MetaMask to use localhost 8545
 
 # Open src/App.js and update the value of rarityAddress with the address of your deployed smart contract
+const rarityAddress = "your-contract-address"
 
 # Start the React server
 npm start
+
+# Running uint tests
+npx hardhat test
 ```
+## Contact
+[@blaise_eth](https://twitter.com/blaise_eth) on Twitter
+My wallet address is: [BlaisePascal.eth](https://etherscan.io/address/0x3a5b9f815bf2fcb044225ce772ae1bc34a8cdac2)

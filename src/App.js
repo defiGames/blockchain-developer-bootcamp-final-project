@@ -18,6 +18,11 @@ function App() {
   const [msg, setMsg] = useState()
   const [walletStatus, setWalletStatus] = useState("Connect Wallet")
   const [reward, setReward] = useState()
+  let s = new Array(9) 
+  const [squares, setSquares] = useState(s)
+
+  //let style = {background : 'white'};
+  const [style, setStyle] = useState()
 
   useEffect(() => {
     initialize()
@@ -169,11 +174,44 @@ function App() {
     }
   }
 
+  function squareClicked(i){
+
+    setStyle({background : 'grey'})
+    const newXs = squares.slice()
+    newXs[i] = (newXs[i] == "") ? "X" : ""
+    setSquares(newXs)
+  }
+
+
   return (
     <div className="App">
       <header className="App-header">
         <div className="Instructions">Please Enter a 4 digit Pattern of 1s and 0s</div>
         <input onChange={e => setPatternValue(e.target.value)} placeholder="Submit Pattern" />
+
+        <div className="game">
+        <div className="game-board">
+        <div>
+          <div className="board-row">
+            <button className="square" style={style} onClick={() =>squareClicked(0)}>{squares[0]}</button>
+            <button className="square" onClick={() => squareClicked(1)}>{squares[1]}</button>
+            <button className="square" onClick={() =>squareClicked(2)}>{squares[2]}</button>
+          </div>
+          <div className="board-row">
+            <button className="square" onClick={squareClicked}>{squares[3]}</button>
+            <button className="square" onClick={squareClicked}>{squares[4]}</button>
+            <button className="square" onClick={squareClicked}>{squares[5]}</button>
+          </div>
+          <div className="board-row">
+            <button className="square" onClick={squareClicked}>{squares[6]}</button>
+            <button className="square" onClick={squareClicked}>{squares[7]}</button>
+            <button className="square" onClick={squareClicked}>{squares[8]}</button>
+          </div>
+        </div>
+
+        </div>
+      </div> 
+
         <button onClick={submitPattern}>Save Pattern</button>
         <div className="App-confirmation">{msg}</div>
         <div className="app-pattern-title">Your Patterns</div>
