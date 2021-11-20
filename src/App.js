@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import Rarity from './artifacts/contracts/Rarity.sol/Rarity.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const rarityAddress = "0x07882Ae1ecB7429a84f1D53048d35c4bB2056877"
+const rarityAddress = "0xfaAddC93baf78e89DCf37bA67943E1bE8F37Bb8c"
 let provider 
 let signer
 let contract 
@@ -14,7 +14,6 @@ const  numSquares = 9
 
 function App() {
 
-  const [pattern, setPatternValue] = useState()
   const [savedPatterns, setSavedPatterns] = useState()
   const [msg, setMsg] = useState()
   const [walletStatus, setWalletStatus] = useState("Connect Wallet")
@@ -182,15 +181,13 @@ function App() {
     }
     setStyle(newStyle)
     setSquarePattern(newPattern)
-    setPatternValue("1111")
   }
 
-
+        //<input onChange={e => setPatternValue(e.target.value)} placeholder="Submit Pattern" />
   return (
     <div className="App">
       <header className="App-header">
         <div className="Instructions">Please Enter a 4 digit Pattern of 1s and 0s</div>
-        <input onChange={e => setPatternValue(e.target.value)} placeholder="Submit Pattern" />
 
         <div className="game">
         <div className="game-board">
@@ -202,13 +199,13 @@ function App() {
           </div>
           <div className="board-row">
             <button className="square" style={style[3]} onClick={() =>squareClicked(3)}></button>
-            <button className="square" onClick={squareClicked}></button>
-            <button className="square" onClick={squareClicked}></button>
+            <button className="square" style={style[4]} onClick={() =>squareClicked(4)}></button>
+            <button className="square" style={style[5]} onClick={() =>squareClicked(5)}></button>
           </div>
           <div className="board-row">
-            <button className="square" onClick={squareClicked}></button>
-            <button className="square" onClick={squareClicked}></button>
-            <button className="square" onClick={squareClicked}></button>
+            <button className="square" style={style[6]} onClick={() =>squareClicked(6)}></button>
+            <button className="square" style={style[7]} onClick={() =>squareClicked(7)}></button>
+            <button className="square" style={style[8]} onClick={() =>squareClicked(8)}></button>
           </div>
         </div>
 

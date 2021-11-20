@@ -12,7 +12,7 @@ let accounts;
 
 beforeEach(async function() { 
   Rarity = await ethers.getContractFactory("Rarity");
-  rarity = await Rarity.deploy(4, fee);
+  rarity = await Rarity.deploy(4, fee, 4);
   accounts = await ethers.getSigners();
   patternLimit = await rarity.patternLimit();
   /*

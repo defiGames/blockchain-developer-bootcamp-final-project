@@ -18,7 +18,7 @@ async function main() {
 
 let fee = ethers.utils.parseEther("0.1") // this should be pulled from contract
   const Rarity = await ethers.getContractFactory("Rarity");
-  const rarity = await Rarity.deploy(4, fee);
+  const rarity = await Rarity.deploy(4, fee, 9);
 
   await rarity.deployed();
 
