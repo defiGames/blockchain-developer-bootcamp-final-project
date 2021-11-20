@@ -5,6 +5,7 @@
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
 
+let fee = ethers.utils.parseEther("0.1") // this should be pulled from contract
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
@@ -15,8 +16,9 @@ async function main() {
 
   // We get the contract to deploy
 
+let fee = ethers.utils.parseEther("0.1") // this should be pulled from contract
   const Rarity = await ethers.getContractFactory("Rarity");
-  const rarity = await Rarity.deploy();
+  const rarity = await Rarity.deploy(4, fee);
 
   await rarity.deployed();
 

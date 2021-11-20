@@ -4,12 +4,13 @@ import { ethers } from 'ethers'
 import Rarity from './artifacts/contracts/Rarity.sol/Rarity.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const rarityAddress = "0x18E317A7D70d8fBf8e6E893616b52390EbBdb629"
+const rarityAddress = "0x07882Ae1ecB7429a84f1D53048d35c4bB2056877"
 let provider 
 let signer
 let contract 
 let accounts
 let address
+const  numSquares = 9
 
 function App() {
 
@@ -18,11 +19,10 @@ function App() {
   const [msg, setMsg] = useState()
   const [walletStatus, setWalletStatus] = useState("Connect Wallet")
   const [reward, setReward] = useState()
-  let s = new Array(9) 
-  const [squares, setSquares] = useState(s)
-
-  //let style = {background : 'white'};
-  const [style, setStyle] = useState()
+  const sp = new Array(numSquares).fill(0)
+  const [squarePattern, setSquarePattern] = useState(sp)
+  const s = new Array(numSquares)
+  const [style, setStyle] = useState(s)
 
   useEffect(() => {
     initialize()
@@ -84,18 +84,13 @@ function App() {
 
   async function submitPattern() {
     if (!walletConnected()) return
-    if (!pattern || pattern.length !== 4) {
-      setMsg("please enter the correct amount of digits")
-      return
-    }
     let overrides = {
       value: ethers.utils.parseEther("0.1")     // ether in this case MUST be a string
     }; 
-    console.log("sending tx");
+    console.log("send tx: ", squarePattern);
     let transaction;
     try {
-      transaction = await contract.submitPattern([parseInt(pattern[0]),parseInt(pattern[1]),parseInt(pattern[2]),parseInt(pattern[3]),], overrides)
-      console.log("send tx");
+      transaction = await contract.submitPattern(squarePattern, overrides)
     } catch (err) {
       setMsg(err.message)
       return false
@@ -174,12 +169,20 @@ function App() {
     }
   }
 
-  function squareClicked(i){
 
-    setStyle({background : 'grey'})
-    const newXs = squares.slice()
-    newXs[i] = (newXs[i] == "") ? "X" : ""
-    setSquares(newXs)
+  function squareClicked(i){
+    const newPattern = squarePattern.slice()
+    const newStyle = style.slice()
+    if(!newPattern[i]) {
+      newPattern[i] = 1
+      newStyle[i] = { background : 'grey'}
+    }else {
+      newPattern[i] = 0
+      newStyle[i] = {background : 'white'}
+    }
+    setStyle(newStyle)
+    setSquarePattern(newPattern)
+    setPatternValue("1111")
   }
 
 
@@ -193,19 +196,19 @@ function App() {
         <div className="game-board">
         <div>
           <div className="board-row">
-            <button className="square" style={style} onClick={() =>squareClicked(0)}>{squares[0]}</button>
-            <button className="square" onClick={() => squareClicked(1)}>{squares[1]}</button>
-            <button className="square" onClick={() =>squareClicked(2)}>{squares[2]}</button>
+            <button className="square" style={style[0]} onClick={() =>squareClicked(0)}></button>
+            <button className="square" style={style[1]} onClick={() => squareClicked(1)}></button>
+            <button className="square" style={style[2]} onClick={() =>squareClicked(2)}></button>
           </div>
           <div className="board-row">
-            <button className="square" onClick={squareClicked}>{squares[3]}</button>
-            <button className="square" onClick={squareClicked}>{squares[4]}</button>
-            <button className="square" onClick={squareClicked}>{squares[5]}</button>
+            <button className="square" style={style[3]} onClick={() =>squareClicked(3)}></button>
+            <button className="square" onClick={squareClicked}></button>
+            <button className="square" onClick={squareClicked}></button>
           </div>
           <div className="board-row">
-            <button className="square" onClick={squareClicked}>{squares[6]}</button>
-            <button className="square" onClick={squareClicked}>{squares[7]}</button>
-            <button className="square" onClick={squareClicked}>{squares[8]}</button>
+            <button className="square" onClick={squareClicked}></button>
+            <button className="square" onClick={squareClicked}></button>
+            <button className="square" onClick={squareClicked}></button>
           </div>
         </div>
 
