@@ -3,7 +3,18 @@
 </p>
 
 ## Description
- This Dapp will create a collection of NFTs that will be used in The Rarity Game. Each players goal is to mint the most unique NFT pattern possible by selecting points in a grid. After 100 NFTS have been minted, the most common design will be burned each time a new NFT is minted. Players are incentiviced to create the most unique and therefore long lasting pattern through a minting fee distribution. Each new mint price increases slightly and is distributed evenly amongst the existing NFT holders' wallets.
+The Rarity Game is a simple blockchain based game played on the Ethereum Blockchain. The objective is to create the most unique pattern. Players who's patterns are not eliminated are rewarded with Eth each time a new pattern is submitted.
+
+  <ul>
+    <b>Rules:</b>
+    <li>Create and submit a unique pattern by selecing boxes.</li>
+    <li>After the limit of patterns is reached, 
+    each new pattern submission will trigger a burn of the most common pattern submission</li>
+    <li>A pattern submissionn fee in Eth is collected and evenly divided up amongst current patterns</li>
+    <li>If a pattern is elimainated, the rewards it has earned remain available, but the pattern will earn no additional rewards</li> 
+    <li>Pattern owners can withdraw rewards earned by their patterns at anytime</li> 
+    <li>The longer your pattern stays active, the more rewards you earn!</li> 
+  </ul>
 
 ## Where to play
 The Rarity game is deployed on the Ropsten Testnet [here](https://defigames.github.io/blockchain-developer-bootcamp-final-project/). You will need test net Eth to play from a [faucet](https://app.mycrypto.com/faucet)
@@ -13,12 +24,14 @@ The Rarity game is deployed on the Ropsten Testnet [here](https://defigames.gith
     scripts - A folder containing a script named sample-script.js that will deploy your smart contract when executed
     test - A folder containing an example testing script
     contracts - A folder holding an example Solidity smart contract
+    scr - A folder containing react node files
 
 ## Run locally
 
 ```bash
 # Install dependencies
 npx create-react-app react-dapp
+
 # In the new directory:
 npm install ethers hardhat @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers
 
@@ -59,8 +72,8 @@ npm start
 npx hardhat test
 ```
 ## Contact
-[@blaise_eth](https://twitter.com/blaise_eth) on Twitter
-My wallet address is: [BlaisePascal.eth](https://etherscan.io/address/0x3a5b9f815bf2fcb044225ce772ae1bc34a8cdac2)
+* [@blaise_eth](https://twitter.com/blaise_eth) on Twitter
+* My wallet address is: [BlaisePascal.eth](https://etherscan.io/address/0x3a5b9f815bf2fcb044225ce772ae1bc34a8cdac2)
 
 ## References
 1. [Facebook's tutorial on deploying a React app to GitHub Pages](https://facebook.github.io/create-react-app/docs/deployment#github-pages-https-pagesgithubcom)
