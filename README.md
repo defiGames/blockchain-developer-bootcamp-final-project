@@ -61,3 +61,7 @@ npx hardhat test
 ## Contact
 [@blaise_eth](https://twitter.com/blaise_eth) on Twitter
 My wallet address is: [BlaisePascal.eth](https://etherscan.io/address/0x3a5b9f815bf2fcb044225ce772ae1bc34a8cdac2)
+
+## References
+1. [Facebook's tutorial on deploying a React app to GitHub Pages](https://facebook.github.io/create-react-app/docs/deployment#github-pages-https-pagesgithubcom)
+2. [Dabits Guide to Full Stack Ethereum Development] (https://dev.to/dabit3/the-complete-guide-to-full-stack-ethereum-development-3j13)
