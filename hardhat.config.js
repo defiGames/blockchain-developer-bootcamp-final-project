@@ -1,4 +1,9 @@
 require("@nomiclabs/hardhat-waffle");
+require('dotenv').config()
+
+const ropstenUrl = "https://ropsten.infura.io/v3/"+ process.env.INFURA_KEY
+const account = process.env.FROM_ACCOUNT
+const privateKey = process.env.PRIVATE_KEY
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -24,6 +29,10 @@ module.exports = {
   networks: {
     hardhat: {
       chainId: 1337
+    },
+    ropsten: {
+      url: ropstenUrl, 
+      accounts: [`0x${privateKey}`]
     }
   }
 };

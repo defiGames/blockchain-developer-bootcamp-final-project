@@ -4,13 +4,15 @@ import { ethers } from 'ethers'
 import Rarity from './artifacts/contracts/Rarity.sol/Rarity.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const rarityAddress = "0xfaAddC93baf78e89DCf37bA67943E1bE8F37Bb8c"
+const rarityAddress = "0x8E64fa6455D8A30548Ff1313D03b69B2EB4A7650"
 let provider 
 let signer
 let contract 
 let accounts
 const  numSquares = 9
-let  network  
+const networkID = 3 //ropsten
+//const networkID = 1337 //localhost
+let  connectedNetwork  
 
 function App() {
 
@@ -41,7 +43,7 @@ function App() {
         //console.log("initializing")
         accounts = await window.ethereum.request({ method: 'eth_accounts' });
         provider = new ethers.providers.Web3Provider(window.ethereum)
-        network  = await provider.getNetwork()
+        connectedNetwork  = await provider.getNetwork()
         signer = provider.getSigner()
         setAddress( await signer.getAddress())
         contract = new ethers.Contract(rarityAddress, Rarity.abi, signer)
@@ -63,6 +65,7 @@ function App() {
         setMsg("Please Connect Wallet")
         return false
       }
+      setMsg("")
       refreshAccount()
     } else {
       setMsg("Please install Metamask")
@@ -77,8 +80,7 @@ function App() {
 
   function walletConnected() {
     if (window.ethereum && accounts && accounts.length > 0) {
-      console.log(network.chainId)  
-      if (network.chainId !== 1337){ //change this when deploying
+      if (connectedNetwork.chainId !== networkID){ //change this when deploying
         setMsg("Please connect to correct Network")
         return false
       }
@@ -124,12 +126,9 @@ function App() {
         let patternText = ""
         if(data.length > 0){
           for (let i = 0; i < data.length; i++) {
-            patternText += "Pattern ID " + data[i] + ": "
             const pattern = await contract.fetchPattern(data[i])
-            patternText += pattern 
             const active = await contract.patternIsActive(data[i])
-            patternText += active ?  " -Active" :  " -Inactive" 
-            patternText += "\n"
+            if(active) patternText += "Pattern ID " + data[i] + ": " + pattern + "\n"
           }
           setSavedPatterns(patternText) 
         } else {
@@ -159,7 +158,8 @@ function App() {
     //wait for transaction to finish
     //check the reward amount, update msg, check that reward is zeroed out
     const _reward = await checkReward() 
-    if(receipt.status === 1 && _reward === 0) {
+    console.log(_reward)
+    if(receipt.status === 1 && parseInt(_reward) === 0) {
       setMsg(reward + " Eth Reward Claimed Sucessfully")
     } else {
       setMsg("There was an error, please try again")
@@ -205,9 +205,10 @@ function App() {
 
         <div className="wallet">
           <button onClick={connectWallet}>{walletStatus}</button>
-          <div className="address">{address && "..." + address.slice(-5)}</div>
+          <div className="address">{address && address.slice(0,5) + "..." + address.slice(-4)}</div>
         </div>
       </div>
+      <div className="msg">{msg}</div>
       <h1 className="Title">The Rarity Game</h1>
       <div className="gameContainer">
         <div className="gameAndButton">
@@ -232,20 +233,25 @@ function App() {
           </div>
 
           <button onClick={submitPattern}>Save Pattern</button>
-          <div className="App-confirmation">{msg}</div>
         </div>
-        <div className="Instructions">Rules: Please create and submit a unique pattern. After the pattern limit of {patternLimit.toString()} patterns is reached,
-         each new pattern submission will trigger a burn of the most common pattern submission.
-        A submissionn fee of 0.1 Eth is divided up amongst existing active patterns creators.
-        The longer your pattern stays active, the more rewards you earn!.
-        You can withdraw rewards earned at anytime.
+        <div className="instructions">
+          <ul>
+            <b>Rules:</b>
+            <li>Create and submit a unique pattern by selecing boxes.</li>
+            <li>After the pattern limit of {patternLimit.toString()} patterns is reached, 
+            each new pattern submission will trigger a burn of the most common pattern submission</li>
+            <li>A pattern submissionn fee of 0.1 Eth is collected and evenly divided up amongst current patterns</li>
+            <li>If a pattern is elimainated, the rewards it has earned remain available, but the pattern will earn no additional rewards</li> 
+            <li>Pattern owners can withdraw rewards earned by their patterns at anytime</li> 
+            <li>The longer your pattern stays active, the more rewards you earn!</li> 
+          </ul>
         </div>
 
       </div>
-
-        <h2 className="app-pattern-title">Your Patterns</h2>
+      <div>
+        <h2 className="app-pattern-title">Your Active Patterns</h2>
         <div className="app-pattern">{savedPatterns}</div>
-
+      </div>
     </div>
   );
 }

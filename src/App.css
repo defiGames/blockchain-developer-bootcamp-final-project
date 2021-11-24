@@ -44,11 +44,22 @@ body {
 
 .gameAndButton{
   margin-right: 75px;
+  margin-top: 20px;
   text-align: center;
 }
 
-.App-confirmation {
-  width: 200px;
+.instructions > *{
+  text-align: left;
+}
+
+.gameAndButton > * {
+  margin-bottom: 15px;
+}
+.msg {
+  text-align: left;
+  padding-left: 50px;
+  padding-right: 50px;
+  font-weight: bold;
 }
 
 .game {

@@ -1,5 +1,6 @@
 {
   "name": "blockchain-developer-bootcamp-final-project",
+  "homepage": "https://defigames.github.io/blockchain-developer-bootcamp-final-project",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,12 +13,15 @@
     "chai": "^4.3.4",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.4.7",
+    "gh-pages": "^3.2.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
