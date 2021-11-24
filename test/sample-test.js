@@ -32,25 +32,30 @@ beforeEach(async function() {
 
 describe("Rarity Game", function () {
 
+  //this tests the totalPatternCount to make sure that it equals 5 after we have submitted 5 patterns
   it("Should increase the pattern count after patterns are submitted", async function () {
     expect(await rarity.totalPatternCount()).to.equal(5);
   });
 
+  //this tests to see that the least rare pattern is burned after we have exceeded the pattern limit
   it("should have burned the first pattern because it is least rare", async function () {
     expect(await rarity.patternIsActive(2)).to.equal(false);
   });
   
+  //Tests to see that we have not exceeded our live pattern limit
   it("should limit the number of patterns to the pattern limit", async function () {
     const count = await rarity.liveAddressCount();
     expect(count).to.equal(patternLimit);
   });
   
+  //Test to see that a player earns the correct amount of eth for playing the game. This number looks random, but it is the expected outcome after some players submitted patterns after this player
   it("should earn the correct reward amount by playing", async function () {
     const expectedReward = BigNumber.from("233333333333333333");
     const actualReward = await rarity.connect(accounts[0]).checkReward();
     expect(actualReward).to.equal(expectedReward);
   });
   
+  //Test whether the the wallet balance decreases after we claim a reward
   it("should claim a reward and increase wallet balance", async function () {
     provider = ethers.provider;
     let originalAmount = await provider.getBalance(accounts[0].address);
@@ -59,10 +64,6 @@ describe("Rarity Game", function () {
     let newBalance = await provider.getBalance(accounts[0].address);
     //console.log("New Balance ", ethers.utils.formatEther(newBalance.toString()));
     expect(newBalance).to.be.above(originalAmount);
-
   });
-  it("should emit an event when a pattern is submitted", async function () {
-    setPattern = await rarity.connect(accounts[4]).submitPattern( [0,0,0,0], overrides);
 
-  });
 });
