@@ -71,6 +71,8 @@ npm start
 # Running uint tests
 npx hardhat test
 ```
+You will also need a .env file in your top level directory with `FROM_ACCOUNT`, `PRIVATE_KEY` and `INFURA_KEY` stored inside. More info [here](https://blog.infura.io/how-to-use-dotenv-to-enhance-basic-security-within-your-dapp/)
+
 ## Contact
 * [@blaise_eth](https://twitter.com/blaise_eth) on Twitter
 * My wallet address is: [BlaisePascal.eth](https://etherscan.io/address/0x3a5b9f815bf2fcb044225ce772ae1bc34a8cdac2)

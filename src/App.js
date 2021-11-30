@@ -87,6 +87,7 @@ function App() {
         setMsg("Please connect to the " + ethers.providers.getNetwork(networkID).name + " Network")
         return false
       }
+      setMsg("")
       return true
     } else {
       setWalletStatus("Connect Wallet")
