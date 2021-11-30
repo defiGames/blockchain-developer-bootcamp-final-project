@@ -16,16 +16,15 @@ let  connectedNetwork
 
 function App() {
 
-  const [savedPatterns, setSavedPatterns] = useState()
   const [msg, setMsg] = useState()
   const [walletStatus, setWalletStatus] = useState("Connect Wallet")
   const [reward, setReward] = useState("0.0")
   const sp = new Array(numSquares).fill(0)
   const [squarePattern, setSquarePattern] = useState(sp)
   const s = new Array(numSquares)
-  const [style, setStyle] = useState(s)
-  const [patternLimit, setPatternLimit] = useState(0)
+  const [patternLimit, setPatternLimit] = useState("?")
   const [address, setAddress] = useState()
+  const [submissionFee, setFee] = useState("?")
 
   useEffect(() => {
     initialize()
@@ -47,8 +46,11 @@ function App() {
         signer = provider.getSigner()
         setAddress( await signer.getAddress())
         contract = new ethers.Contract(rarityAddress, Rarity.abi, signer)
-        setPatternLimit( await contract.patternLimit())
-        console.log(patternLimit.toString())
+        const pL = await contract.patternLimit()
+        setPatternLimit(pL.toString())
+        const sFee = ethers.utils.formatEther(await contract.fee())
+        const fFee = (+sFee).toFixed(2)
+        setFee(fFee)
 
         const eventFilter = contract.filters.newPattern(address, null)
         
@@ -62,7 +64,7 @@ function App() {
         
       } catch (err) {
         console.log("Error connecting Wallet: "+ err.message)
-        setMsg("Please Connect Wallet")
+        walletConnected()
         return false
       }
       setMsg("")
@@ -80,11 +82,11 @@ function App() {
 
   function walletConnected() {
     if (window.ethereum && accounts && accounts.length > 0) {
-      if (connectedNetwork.chainId !== networkID){ //change this when deploying
-        setMsg("Please connect to correct Network")
+      setWalletStatus("Wallet Connected")
+      if (connectedNetwork.chainId !== networkID && ethers.providers){ 
+        setMsg("Please connect to the " + ethers.providers.getNetwork(networkID).name + " Network")
         return false
       }
-      setWalletStatus("Wallet Connected")
       return true
     } else {
       setWalletStatus("Connect Wallet")
@@ -119,26 +121,6 @@ function App() {
     */
   }
   
-  async function fetchPatterns() {
-    if (!walletConnected()) return
-      try {
-        const data = await contract.fetchPatternIDs()
-        let patternText = ""
-        if(data.length > 0){
-          for (let i = 0; i < data.length; i++) {
-            const pattern = await contract.fetchPattern(data[i])
-            const active = await contract.patternIsActive(data[i])
-            if(active) patternText += "Pattern ID " + data[i] + ": " + pattern + "\n"
-          }
-          setSavedPatterns(patternText) 
-        } else {
-          setSavedPatterns("No Patterns Found")
-        }
-
-      } catch (err) {
-        setMsg(err)
-      }
-  }
 
   async function claimReward() {
     if (!walletConnected()) return
@@ -179,22 +161,98 @@ function App() {
     }
   }
 
+  const [patternGrid, setPatternGrid]  = useState(s)
 
-  function squareClicked(i){
-    const newPattern = squarePattern.slice()
-    const newStyle = style.slice()
-    if(!newPattern[i]) {
-      newPattern[i] = 1
-      newStyle[i] = { background : 'grey'}
-    }else {
-      newPattern[i] = 0
-      newStyle[i] = {background : 'white'}
-    }
-    setStyle(newStyle)
-    setSquarePattern(newPattern)
+  async function fetchPatterns() {
+    if (!walletConnected()) return
+
+      try {
+        const newGrid = new Array() 
+        const data = await contract.fetchPatternIDs()
+        if(data.length > 0){
+          for (let i = 0; i < data.length; i++) {
+            const pattern = await contract.fetchPattern(data[i])
+            const active = await contract.patternIsActive(data[i])
+            if(active){
+              newGrid[i] = new Array()
+              newGrid[i] = pattern.map(x => x.toNumber())
+            }
+          }
+          setPatternGrid(newGrid)
+        } else {
+          //setSavedPatterns("No Patterns Found")
+        }
+
+      } catch (err) {
+        setMsg(err)
+      }
   }
 
-        //<input onChange={e => setPatternValue(e.target.value)} placeholder="Submit Pattern" />
+  function changeStyle(i){
+    const newPattern = squarePattern.slice()
+    if(!newPattern[i]) {
+      newPattern[i] = 1
+    }else {
+      newPattern[i] = 0
+    }
+    setSquarePattern(newPattern)
+  }
+  
+  function multiGrid(gridArray){
+    if(gridArray && gridArray.length){
+      const grids = new Array()
+      for (let i = 0; i < gridArray.length; i++) {
+        if(gridArray[i]){
+          //console.log(i)
+          grids.push(
+          <div className = "activePatterns">
+            <span className = "id" >ID: {i}</span>
+            {grid(gridArray[i])}
+          </div>
+          )
+        }
+      }
+      return grids
+    }
+  }
+
+  function grid(selected, squareClicked){
+    let newStyle = new Array(numSquares)
+    //use the array to set square style
+    if(!selected) return 
+    for (let i = 0; i < selected.length; i++) {
+
+    if(selected[i]) {
+      newStyle[i] = { background : 'grey'}
+    }else {
+      newStyle[i] = {background : 'white'}
+    }
+  }
+
+    return(
+      <div className="game">
+        <div className="game-board">
+          <div className="board-row">
+            <button className="square" style={newStyle[0]} onClick={() =>squareClicked(0)}></button>
+            <button className="square" style={newStyle[1]} onClick={() =>squareClicked(1)}></button>
+            <button className="square" style={newStyle[2]} onClick={() =>squareClicked(2)}></button>
+          </div>
+          <div className="board-row">
+            <button className="square" style={newStyle[3]} onClick={() =>squareClicked(3)}></button>
+            <button className="square" style={newStyle[4]} onClick={() =>squareClicked(4)}></button>
+            <button className="square" style={newStyle[5]} onClick={() =>squareClicked(5)}></button>
+          </div>
+          <div className="board-row">
+            <button className="square" style={newStyle[6]} onClick={() =>squareClicked(6)}></button>
+            <button className="square" style={newStyle[7]} onClick={() =>squareClicked(7)}></button>
+            <button className="square" style={newStyle[8]} onClick={() =>squareClicked(8)}></button>
+          </div>
+        </div>
+      </div>
+      //<input onChange={e => setPatternValue(e.target.value)} placeholder="Submit Pattern" />
+    )
+  }
+
   return (
     <div className="App">
       <div className="topBar">
@@ -212,35 +270,16 @@ function App() {
       <h1 className="Title">The Rarity Game</h1>
       <div className="gameContainer">
         <div className="gameAndButton">
-          <div className="game">
-            <div className="game-board">
-              <div className="board-row">
-                <button className="square" style={style[0]} onClick={() =>squareClicked(0)}></button>
-                <button className="square" style={style[1]} onClick={() => squareClicked(1)}></button>
-                <button className="square" style={style[2]} onClick={() =>squareClicked(2)}></button>
-              </div>
-              <div className="board-row">
-                <button className="square" style={style[3]} onClick={() =>squareClicked(3)}></button>
-                <button className="square" style={style[4]} onClick={() =>squareClicked(4)}></button>
-                <button className="square" style={style[5]} onClick={() =>squareClicked(5)}></button>
-              </div>
-              <div className="board-row">
-                <button className="square" style={style[6]} onClick={() =>squareClicked(6)}></button>
-                <button className="square" style={style[7]} onClick={() =>squareClicked(7)}></button>
-                <button className="square" style={style[8]} onClick={() =>squareClicked(8)}></button>
-              </div>
-            </div>
-          </div>
-
+          {grid(squarePattern, changeStyle)}
           <button onClick={submitPattern}>Save Pattern</button>
         </div>
         <div className="instructions">
           <ul>
             <b>Rules:</b>
             <li>Create and submit a unique pattern by selecing boxes.</li>
-            <li>After the pattern limit of {patternLimit.toString()} patterns is reached, 
+            <li>After the pattern limit of {patternLimit} patterns is reached, 
             each new pattern submission will trigger a burn of the most common pattern submission</li>
-            <li>A pattern submissionn fee of 0.1 Eth is collected and evenly divided up amongst current patterns</li>
+            <li>A pattern submissionn fee of {submissionFee} Eth is collected and evenly divided up amongst current patterns</li>
             <li>If a pattern is elimainated, the rewards it has earned remain available, but the pattern will earn no additional rewards</li> 
             <li>Pattern owners can withdraw rewards earned by their patterns at anytime</li> 
             <li>The longer your pattern stays active, the more rewards you earn!</li> 
@@ -250,7 +289,7 @@ function App() {
       </div>
       <div>
         <h2 className="app-pattern-title">Your Active Patterns</h2>
-        <div className="app-pattern">{savedPatterns}</div>
+        <div className="app-pattern">{multiGrid(patternGrid)}</div>
       </div>
     </div>
   );
