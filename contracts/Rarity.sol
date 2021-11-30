@@ -24,7 +24,7 @@ contract Rarity is Ownable{
     mapping(address => playerData ) public players;
 
     struct patternStruct {
-        uint[] pattern;
+        uint8[] pattern;
         bool burned;
         address creator;
     }
@@ -61,9 +61,9 @@ contract Rarity is Ownable{
     }
     
     /// @notice Submit a pattern 
-    /// @param _pattern is a uint array of length "squares" 
+    /// @param _pattern is a uint8 array of length "squares" 
     /// @return uint if successful, the generated pattern id is returned 
-    function submitPattern(uint[] memory _pattern) public payable returns (uint) {
+    function submitPattern(uint8[] memory _pattern) public payable returns (uint) {
         //require that they send ether
         console.log("submitting pattern id:%s" , totalPatternCount);
         require(msg.value == fee, "please send ether");
@@ -184,8 +184,8 @@ contract Rarity is Ownable{
 
     /// @notice Lookup a pattern by id
     /// @param id the pattern id
-    /// @return uint[] a uint array of length squares 
-    function fetchPattern(uint id) public view returns(uint[] memory){
+    /// @return uint8[] a uint array of length squares 
+    function fetchPattern(uint id) public view returns(uint8[] memory){
         return (patterns[id].pattern);
     }
 

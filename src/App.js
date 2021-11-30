@@ -4,14 +4,14 @@ import { ethers } from 'ethers'
 import Rarity from './artifacts/contracts/Rarity.sol/Rarity.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const rarityAddress = "0x8E64fa6455D8A30548Ff1313D03b69B2EB4A7650"
+const rarityAddress = "0xB0f05d25e41FbC2b52013099ED9616f1206Ae21B"
 let provider 
 let signer
 let contract 
 let accounts
 const  numSquares = 9
-const networkID = 3 //ropsten
-//const networkID = 1337 //localhost
+//const networkID = 3 //ropsten
+const networkID = 1337 //localhost
 let  connectedNetwork  
 
 function App() {
@@ -175,7 +175,8 @@ function App() {
             const active = await contract.patternIsActive(data[i])
             if(active){
               newGrid[i] = new Array()
-              newGrid[i] = pattern.map(x => x.toNumber())
+              console.log(pattern)
+              newGrid[i] = pattern// = pattern.map(x => x.toNumber())
             }
           }
           setPatternGrid(newGrid)
@@ -216,7 +217,7 @@ function App() {
     }
   }
 
-  function grid(selected, squareClicked){
+  function grid(selected, squareClicked = () => {}){
     let newStyle = new Array(numSquares)
     //use the array to set square style
     if(!selected) return 
