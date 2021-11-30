@@ -4,14 +4,15 @@ import { ethers } from 'ethers'
 import Rarity from './artifacts/contracts/Rarity.sol/Rarity.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const rarityAddress = "0xBbA476e8CC58DA27C1517bcadAf85a8562205a8a"
+const rarityAddress = "0xB0f05d25e41FbC2b52013099ED9616f1206Ae21B"
+//0xBbA476e8CC58DA27C1517bcadAf85a8562205a8a
 let provider 
 let signer
 let contract 
 let accounts
 const  numSquares = 9
-const networkID = 3 //ropsten
-//const networkID = 1337 //localhost
+//const networkID = 3 //ropsten
+const networkID = 1337 //localhost
 let  connectedNetwork  
 
 function App() {
@@ -39,12 +40,12 @@ function App() {
   async function initialize() {
     if (window.ethereum) {
       try {
-        //console.log("initializing")
         accounts = await window.ethereum.request({ method: 'eth_accounts' });
         provider = new ethers.providers.Web3Provider(window.ethereum)
         connectedNetwork  = await provider.getNetwork()
         signer = provider.getSigner()
-        setAddress( await signer.getAddress())
+        const _address = await signer.getAddress()
+        setAddress(_address)
         contract = new ethers.Contract(rarityAddress, Rarity.abi, signer)
         const pL = await contract.patternLimit()
         setPatternLimit(pL.toString())
@@ -52,8 +53,10 @@ function App() {
         const fFee = (+sFee).toFixed(2)
         setFee(fFee)
 
-        const eventFilter = contract.filters.newPattern(address, null)
+        console.log("initializing")
+        const eventFilter = contract.filters.newPattern(_address, null)
         
+        console.log("initializing")
         //set event listener
         contract.on(eventFilter, (  metadata, event) => {
           console.log('Address  :', metadata);
