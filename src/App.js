@@ -53,14 +53,12 @@ function App() {
         const fFee = (+sFee).toFixed(2)
         setFee(fFee)
 
-        console.log("initializing")
-        const eventFilter = contract.filters.newPattern(_address, null)
-        
-        console.log("initializing")
         //set event listener
+        const eventFilter = contract.filters.newPattern(_address, null)
         contract.on(eventFilter, (  metadata, event) => {
           console.log('Address  :', metadata);
           console.log('Pattern Id : ', event.toString());  //Event object
+          setMsg("Pattern submitted")
           setMsg(`Pattern ID No. ${event.toString()} has been submitted!`)
           refreshAccount()
         });
