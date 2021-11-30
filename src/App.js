@@ -4,14 +4,14 @@ import { ethers } from 'ethers'
 import Rarity from './artifacts/contracts/Rarity.sol/Rarity.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const rarityAddress = "0xB0f05d25e41FbC2b52013099ED9616f1206Ae21B"
+const rarityAddress = "0xBbA476e8CC58DA27C1517bcadAf85a8562205a8a"
 let provider 
 let signer
 let contract 
 let accounts
 const  numSquares = 9
-//const networkID = 3 //ropsten
-const networkID = 1337 //localhost
+const networkID = 3 //ropsten
+//const networkID = 1337 //localhost
 let  connectedNetwork  
 
 function App() {
