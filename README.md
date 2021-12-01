@@ -9,7 +9,7 @@ The Rarity Game is a simple blockchain based game played on the Ethereum Blockch
     <b>Rules:</b>
     <li>Create and submit a unique pattern by selecing boxes.</li>
     <li>After the limit of patterns is reached, 
-    each new pattern submission will trigger a burn of the most common pattern submission</li>
+    each new pattern submission will trigger a burn of the most common pattern</li>
     <li>A pattern submissionn fee in Eth is collected and evenly divided up amongst current patterns</li>
     <li>If a pattern is elimainated, the rewards it has earned remain available, but the pattern will earn no additional rewards</li> 
     <li>Pattern owners can withdraw rewards earned by their patterns at anytime</li> 
@@ -18,6 +18,8 @@ The Rarity Game is a simple blockchain based game played on the Ethereum Blockch
 
 ## Where to play
 The Rarity game is deployed on the Ropsten Testnet [here](https://defigames.github.io/blockchain-developer-bootcamp-final-project/). You will need test net Eth to play from a [faucet](https://app.mycrypto.com/faucet)
+
+Check out this cool [Video Walkthrough](https://www.loom.com/share/851c4b134ee841fc95f4d9f21467b374)
 
 ## Directory Structure
     hardhat.config.js - The entirety of your Hardhat setup (i.e. your config, plugins, and custom tasks) is contained in this file.
@@ -75,7 +77,7 @@ You will also need a .env file in your top level directory with `FROM_ACCOUNT`, 
 
 ## Contact
 * [@blaise_eth](https://twitter.com/blaise_eth) on Twitter
-* My wallet address is: [BlaisePascal.eth](https://etherscan.io/address/0x3a5b9f815bf2fcb044225ce772ae1bc34a8cdac2)
+* My wallet address is: [BlaisePascal.eth](https://etherscan.io/address/0x3a5b9f815bf2fcb044225ce772ae1bc34a8cdac2) - please only send certification here if it won't dox me, thanks.
 
 ## References
 1. [Facebook's tutorial on deploying a React app to GitHub Pages](https://facebook.github.io/create-react-app/docs/deployment#github-pages-https-pagesgithubcom)
